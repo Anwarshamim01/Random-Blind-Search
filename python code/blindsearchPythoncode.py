@@ -5,17 +5,12 @@ import matplotlib.pyplot as plt
 from scipy.spatial import cKDTree
 import matplotlib.animation as animation
 import pickle
-########################################
-# PERIODIC BOUNDARY FUNCTION
-########################################
+
 def periodic_boundaries(pos, boundary):
     pos[0] = ((pos[0] + boundary) % (2 * boundary)) - boundary
     pos[1] = ((pos[1] + boundary) % (2 * boundary)) - boundary
     return pos
 
-########################################
-# LÉVY FLIGHT FUNCTIONS
-########################################
 def levy_alpha_stable(alpha, beta, mu, c, delta_t):
     theta = np.random.uniform(-np.pi/2, np.pi/2)
     W = np.random.exponential(1)
@@ -42,18 +37,12 @@ def levy_flight_step_with_angle(alpha, beta, mu, c, delta_t):
     dy = jump_length * np.sin(angle)
     return dx, dy, jump_length
 
-########################################
-# MEAN-SQUARED DISPLACEMENT UTILITY
-########################################
 def compute_msd(positions):
     pos_array = np.array(positions)
     deltas = pos_array - pos_array[0]
     squared_deltas = deltas[:, 0]**2 + deltas[:, 1]**2
     return squared_deltas
 
-########################################
-# MAIN SIMULATION
-########################################
 # Parameters
 alpha = 1.4
 beta = 0
@@ -124,19 +113,19 @@ for run_idx in tqdm(range(num_runs), desc="Simulating Runs", unit="run"):
                 elif idx_nearest_target != middle_index and first_hit_time is None:
                     first_hit_time = step_count
                     visited_targets.add(idx_nearest_target)
-            # Stop simulation if both events have occurred
+            
             if first_return_time is not None and first_hit_time is not None:
                 break
 
             if step_count >= max_time:
                 break
 
-        # Break outer loop if both events have occurred or max_time is reached
+        
         if first_return_time is not None and first_hit_time is not None:
             break
         if step_count >= max_time:
             break
-        # Record data for this run
+        
     all_run_data.append({
         "run_index": run_idx,
         
@@ -147,10 +136,10 @@ for run_idx in tqdm(range(num_runs), desc="Simulating Runs", unit="run"):
     })
 
 
-    # Print progress
+
     print(f"Run {run_idx + 1}/{num_runs}: "
           f"First Return = {first_return_time}, "
           f"First Hit = {first_hit_time}")
-# Save results to a file
+
 with open("simulation_results.pkl", "wb") as f:
     pickle.dump(all_run_data, f)
